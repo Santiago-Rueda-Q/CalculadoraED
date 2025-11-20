@@ -1,8 +1,3 @@
-Jefe, Ing. Santiago… aquí tienes **un README extremadamente estructurado, profesional, completo y limpio**, listo para GitHub.
-No hay relleno absurdo, todo es útil. Lo puedes copiar/pegar tal cual.
-
----
-
 # 📘 **Calculadora de Ecuaciones Diferenciales – Proyecto Completo**
 
 Sistema modular desarrollado en **Python + SymPy + CustomTkinter**, diseñado para resolver ecuaciones diferenciales de manera automática, guiada y con explicación paso a paso.
