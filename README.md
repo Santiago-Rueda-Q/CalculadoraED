@@ -1,390 +1,509 @@
-Jefe, Ing. Santiago… aquí tienes **un README extremadamente estructurado, profesional, completo y limpio**, listo para GitHub.
-No hay relleno absurdo, todo es útil. Lo puedes copiar/pegar tal cual.
+# KATSIO – Differential Equation Calculator
+
+<div align="center">
+
+![KATSIO Banner](https://img.shields.io/badge/KATSIO-Differential_Calculator-1C4E80?style=for-the-badge)
+[![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-2.0+-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+
+**Una calculadora interactiva de ecuaciones diferenciales ordinarias (EDO) con diseño inspirado en Casio FX-991ES Plus**
+
+[Características](#-características-principales) • [Instalación](#-instalación) • [Uso](#-uso) • [Tecnologías](#-tecnologías-utilizadas) • [Créditos](#-créditos)
+
+</div>
 
 ---
 
-# 📘 **Calculadora de Ecuaciones Diferenciales – Proyecto Completo**
+## 📖 Descripción General
 
-Sistema modular desarrollado en **Python + SymPy + CustomTkinter**, diseñado para resolver ecuaciones diferenciales de manera automática, guiada y con explicación paso a paso.
-Incluye parser avanzado, motor de resolución, herramientas de verificación y un teclado matemático interactivo.
+**KATSIO** es una calculadora web moderna diseñada para resolver ecuaciones diferenciales ordinarias (EDOs) con una interfaz que emula el estilo "Natural Display" de las calculadoras científicas **Casio FX-991ES Plus**. 
 
----
+El proyecto está orientado a estudiantes, docentes y desarrolladores que necesitan una herramienta intuitiva, accesible y visualmente atractiva para resolver EDOs simbólicamente, obtener soluciones paso a paso y aplicar condiciones iniciales de manera flexible.
 
-# 📌 **Tabla de Contenidos**
+### 🎯 Objetivo del Proyecto
 
-1. [Descripción General](#descripción-general)
-2. [Características Principales](#características-principales)
-3. [Arquitectura del Sistema](#arquitectura-del-sistema)
+KATSIO combina la potencia del cálculo simbólico moderno con una experiencia de usuario realista, ofreciendo:
 
-   * 3.1. main.py
-   * 3.2. parser.py
-   * 3.3. solvers.py
-   * 3.4. utils.py
-   * 3.5. teclado_matematico.py
-4. [Flujo Interno de Funcionamiento](#flujo-interno-de-funcionamiento)
-5. [Estructura del Proyecto](#estructura-del-proyecto)
-6. [Instalación](#instalación)
-7. [Uso de la Aplicación](#uso-de-la-aplicación)
-8. [Tipos de Ecuaciones Soportadas](#tipos-de-ecuaciones-soportadas)
-9. [Capturas del Sistema (opcional)](#capturas-opcionales)
-10. [Errores Comunes y Soluciones](#errores-comunes-y-soluciones)
-11. [Créditos y Tecnología](#créditos-y-tecnología)
+- ✅ **Resolución simbólica completa** de EDOs de primer, segundo y tercer orden
+- ✅ **Interfaz estilo calculadora física** con botones interactivos
+- ✅ **Notación matemática profesional** renderizada con MathJax
+- ✅ **Procedimiento detallado paso a paso** generado por IA
+- ✅ **Condiciones iniciales dinámicas** configurables en tiempo real
 
 ---
 
-# 🧠 **Descripción General**
+## 🧬 Origen del Proyecto
 
-La *Calculadora de Ecuaciones Diferenciales* es una herramienta diseñada para:
+### 🔬 Versión Original en Python
 
-* Resolver ecuaciones diferenciales de 1° y 2° orden
-* Permitir resolución automática o guiada por método
-* Mostrar la solución detallada y paso a paso
-* Incluir validación y verificación simbólica
-* Funcionar con un teclado matemático para ingresar expresiones complejas
+KATSIO comenzó como un prototipo local desarrollado en Python utilizando:
 
-El sistema está pensado para estudiantes, docentes y personas con dificultades cognitivas que necesitan explicaciones claras y visuales.
+| Tecnología | Propósito |
+|------------|-----------|
+| **SymPy** | Motor de cálculo simbólico para resolver EDOs |
+| **Tkinter** | Interfaz gráfica de usuario básica |
+| **Matplotlib** | Visualización gráfica de soluciones |
 
----
+#### ❌ Limitaciones de la Versión Original
 
-# 🚀 **Características Principales**
+A pesar de su funcionalidad básica, el prototipo enfrentó varios desafíos técnicos:
 
-### ✔ Interfaz moderna con CustomTkinter
+1. **Problemas de SymPy con notación humana**:
+   - Dificultad para interpretar `y'`, `y''`, `dy/dx`
+   - Incompatibilidad con funciones como `sqrt()` sin normalización previa
+   - Errores frecuentes con ecuaciones implícitas o complejas
 
-Tema oscuro, botones estilizados, scroll y diseño responsivo.
+2. **Limitaciones de Tkinter**:
+   - Sin soporte para MathJax (notación matemática limitada)
+   - Interfaz no responsiva ni moderna
+   - Imposibilidad de implementar modales, tooltips o notificaciones
+   - Difícil integración de copiar/pegar resultados
 
-### ✔ Parser especializado
+3. **Condiciones iniciales poco robustas**:
+   - Fallos al procesar CI en ecuaciones implícitas
+   - Validación insuficiente de formato
 
-Convierte ecuaciones escritas por el usuario en expresiones SymPy:
+### 🚀 Inspiración para la Migración Web
 
-* `y'`, `y''`, `y'''`
-* `dy/dx`, `d²y/dx²`
-* Funciones trigonométricas
-* Notación e^x → exp(x)
-
-### ✔ Motor de resolución inteligente
-
-Detecta el tipo de ecuación y aplica:
-
-* Variables separables
-* Lineal de primer orden
-* Exactas
-* Homogéneas
-* Bernoulli
-* Coeficientes constantes
-* Indeterminados
-* Variación de parámetros
-* Modo automático SymPy
-
-### ✔ Explicación paso a paso
-
-Incluye teoría, proceso matemático y solución final formateada.
-
-### ✔ Verificación simbólica
-
-Comprueba que la solución satisface la ecuación original.
-
-### ✔ Teclado matemático interactivo
-
-Inserta símbolos y funciones sin necesidad de escribirlos manualmente.
+Durante una clase, se presentó un proyecto similar que demostraba las ventajas de una arquitectura web moderna. Esto motivó la reconstrucción completa de KATSIO con tecnologías actuales, resultando en una experiencia de usuario significativamente superior.
 
 ---
 
-# 🏗️ **Arquitectura del Sistema**
+## ✨ Características Principales
 
-El proyecto está dividido en módulos independientes y bien encapsulados.
+### 🧮 Entrada Flexible y Normalización Inteligente
 
----
+KATSIO acepta múltiples formatos de notación matemática, normalizándolos automáticamente:
 
-## 🟦 **1. main.py – Interfaz y Control Principal**
+| Notación del Usuario | Normalización Interna |
+|---------------------|----------------------|
+| `y'` | `d/dx(y)` |
+| `y''` | `d^2/dx^2(y)` |
+| `y'''` | `d^3/dx^3(y)` |
+| `dy/dx` | `dy/dx` (sin cambios) |
+| `√x` o `√(x)` | `sqrt(x)` |
+| `sin(x)`, `cos(x)`, `tan(x)` | Sin cambios |
+| `exp(x)` | Sin cambios |
+| `log(x)` | Sin cambios |
 
-Responsable de:
-
-* Crear la ventana principal
-* Mostrar campos de entrada
-* Mostrar resultados
-* Ejecutar el flujo completo
-* Conectar con parser/solvers/utils
-* Administrar botones:
-
-  * Resolver
-  * Limpiar
-  * Copiar
-  * Ver ejemplos
-  * Teclado matemático
-
-Además monta:
-
-* Combobox de métodos
-* Opciones de modo detallado
-* Panel de resultados con scroll
-
----
-
-## 🟪 **2. parser.py – Traductor Matemático**
-
-Encargado de convertir un texto en una ecuación SymPy válida.
-
-Funciones principales:
-
-* `limpiar_ecuacion()`
-* `convertir_derivadas()`
-* `reemplazar_variable_dependiente()`
-* `crear_namespace()`
-* `parsear()`
-* `validar_ecuacion()`
-
-Funciones soportadas:
-
-`sin, cos, tan, exp, sqrt, log, abs, sinh, cosh, tanh...`
-Constantes: `pi, E, I`
-
-Derivadas soportadas:
-
-* y', y'', y'''
-* dy/dx
-* d²y/dx²
-* d³y/dx³
-
----
-
-## 🟩 **3. solvers.py – Motor de Resolución Matemática**
-
-Implementa la lógica matemática que usa SymPy.
-
-Funciones clave:
-
-* Clasificación con `classify_ode()`
-* Resolución automática con `dsolve()`
-* Métodos específicos (lineal, separable, exacta, Bernoulli…)
-* `resolver_con_metodo()` para ejecutar un método definido por el usuario
-* Verificación simbólica
-* Simplificación de expresiones
-* Extracción de constantes de integración
-
-Este módulo es el “cerebro matemático” del sistema.
-
----
-
-## 🟧 **4. utils.py – Formateo y Explicación**
-
-Divide su funcionalidad en:
-
-### **FormateadorMatematico**
-
-* Convierte expresiones a Unicode bonito
-* Convierte a LaTeX
-* Genera decoraciones ASCII
-* Formatea ecuaciones completas
-
-### **GeneradorPasos**
-
-Produce explicación detallada para:
-
-* Separables
-* Lineales
-* Exactas
-* Bernoulli
-* Coeficientes constantes
-* Métodos automáticos
-
-### **ValidadorEcuaciones**
-
-* Verifica si hay derivadas
-* Detecta orden de la ecuación
-* Verifica linealidad
-* Extrae constantes
-
----
-
-## 🟨 **5. teclado_matematico.py – Teclado Interactivo**
-
-Incluye:
-
-* Derivadas
-* Operadores
-* Constantes
-* Plantillas rápidas
-* Funciones trigonométricas e hiperbólicas
-* Números y variables clásicas
-
-Funciones especiales:
-
-* Insertar donde está el cursor
-* Borrar último
-* Limpiar todo
-* Ventana flotante siempre visible
-
----
-
-# 🔄 **Flujo Interno de Funcionamiento**
-
+**Ejemplo de entrada válida:**
 ```
-                            ┌───────────────┐
-                            │ Usuario escribe│
-                            │ la ecuación   │
-                            └──────┬────────┘
-                                    │
-                            main.py│
-                                    ▼
-                        ┌──────────────────────┐
-                        │ parser.py            │
-                        │ → Traduce la ecuación│
-                        └──────────┬───────────┘
-                                    │
-                            main.py│
-                                    ▼
-                        ┌──────────────────────┐
-                        │ solvers.py           │
-                        │ → Clasifica          │
-                        │ → Resuelve           │
-                        │ → Verifica           │
-                        └──────────┬───────────┘
-                                    │
-                            main.py│
-                                    ▼
-                        ┌──────────────────────┐
-                        │ utils.py             │
-                        │ → Formatea           │
-                        │ → Genera pasos       │
-                        └──────────┬───────────┘
-                                    │
-                                    ▼
-                        ┌──────────────────────┐
-                        │ Interfaz (main.py)   │
-                        │ → Muestra resultado  │
-                        └──────────────────────┘
+y' = √(x^2 + y^2)
+dy/dx + 2*y = sin(x)
+y'' - 3*y' + 2*y = exp(x)
+```
+
+### 🎛️ Condiciones Iniciales Dinámicas
+
+El sistema permite configurar hasta **3 condiciones iniciales** de forma interactiva:
+
+- ➕ **Añadir** condiciones en tiempo real
+- ➖ **Eliminar** condiciones no necesarias
+- ✅ **Validación automática** de formato (`y(0)=1`, `y'(1)=2`, etc.)
+
+**Casos de uso:**
+- EDO de primer orden → 1 condición inicial
+- EDO de segundo orden → 2 condiciones iniciales
+- EDO de tercer orden → 3 condiciones iniciales
+
+### 🤖 Motor Simbólico Inteligente (DeepSeek Chat)
+
+KATSIO utiliza la **API de DeepSeek Chat** como motor matemático avanzado:
+
+| Función | Descripción |
+|---------|-------------|
+| **Resolución simbólica** | Calcula la solución general y particular |
+| **Procedimiento paso a paso** | Genera explicaciones detalladas del proceso |
+| **Manejo de casos especiales** | Detecta ecuaciones lineales, separables, exactas, Bernoulli, etc. |
+| **Aplicación de CI** | Determina constantes de integración automáticamente |
+
+**Ventajas sobre SymPy:**
+- Mayor flexibilidad interpretativa
+- Generación de explicaciones educativas
+- Mejor manejo de notación no estándar
+
+### 🎨 Estilo Casio Auténtico
+
+La interfaz replica fielmente el diseño de las calculadoras **Casio FX-991ES Plus**:
+
+#### Teclado Interactivo
+
+| Categoría | Botones Disponibles |
+|-----------|-------------------|
+| **Funciones trigonométricas** | `sin`, `cos`, `tan` |
+| **Funciones especiales** | `log`, `exp`, `√` |
+| **Operadores diferenciales** | `d/dx`, `d/dy` |
+| **Constantes matemáticas** | `π`, `e` |
+| **Operadores básicos** | `+`, `-`, `×`, `÷`, `^` |
+| **Variables** | `x`, `y`, `t` |
+| **Paréntesis** | `(`, `)` |
+| **Control** | `AC` (limpiar pantalla) |
+
+#### Pantalla LCD Simulada
+
+- Fondo verde característico (`#C9D5B5`)
+- Fuente monoespaciada (Roboto Mono)
+- Área de texto expandible
+- Cursor de inserción funcional
+
+### 📚 Sistema de Ejemplos Precargados
+
+KATSIO incluye **8 ecuaciones diferenciales** listas para usar:
+
+```javascript
+1. dy/dx = x*y                    // EDO separable básica
+2. y' = (x^2)/y                   // EDO separable con potencias
+3. dy/dx + y = e^x                // EDO lineal de primer orden
+4. y' = x*exp(-y)                 // EDO con función exponencial
+5. dy/dx = y/(x+1)                // EDO homogénea
+6. y' + 2*y = sin(x)              // EDO lineal con función trigonométrica
+7. dy/dx = (x^3 + 2)/(y+1)        // EDO separable compleja
+8. y' = sqrt(x^2 + y^2)           // EDO con raíz cuadrada
+```
+
+Los ejemplos se cargan directamente en la pantalla con un solo clic.
+
+### ❔ Modal de Ayuda Interactivo
+
+Guía completa para el usuario:
+
+- **¿Qué es KATSIO?** – Descripción del proyecto
+- **¿Cómo escribir ecuaciones?** – Lista de operadores y funciones válidas
+- **¿Cómo calcular?** – Instrucciones paso a paso
+- **¿Qué muestra la calculadora?** – Interpretación de resultados
+- **Consejos y trucos** – Mejores prácticas de uso
+
+### 🎉 Notificaciones Toast
+
+Sistema de feedback visual para el usuario:
+
+| Tipo | Color | Uso |
+|------|-------|-----|
+| ✔ **Éxito** | Verde | Ecuación resuelta correctamente |
+| ✖ **Error** | Rojo | Error de entrada o servidor |
+| ℹ️ **Info** | Azul | Ejemplo cargado, acción completada |
+
+---
+
+## 🛠 Tecnologías Utilizadas
+
+### Frontend
+
+| Tecnología | Versión | Propósito |
+|------------|---------|-----------|
+| **HTML5** | - | Estructura semántica del DOM |
+| **TailwindCSS** | 3.x | Sistema de diseño utility-first |
+| **JavaScript (ES6+)** | - | Lógica de interacción y validación |
+| **MathJax** | 3.x | Renderizado de notación matemática (LaTeX) |
+
+### Backend
+
+| Tecnología | Versión | Propósito |
+|------------|---------|-----------|
+| **Python** | 3.8+ | Lenguaje del servidor |
+| **Flask** | 2.0+ | Framework web minimalista |
+| **DeepSeek Chat API** | - | Motor de resolución simbólica por IA |
+
+### Dependencias Principales
+
+```plaintext
+flask>=2.0.0
+python-dotenv>=0.19.0
+requests>=2.26.0
 ```
 
 ---
 
-# 📂 **Estructura del Proyecto**
+## 📁 Estructura del Proyecto
 
 ```
-📁 calculadora-ed/
+KATSIO/
 │
-├── main.py
-├── parser.py
-├── solvers.py
-├── utils.py
-├── teclado_matematico.py
+├── app.py                      # Servidor Flask principal
+├── .env                        # Variables de entorno (API keys)
+├── .env.example                # Plantilla de configuración
+├── requirements.txt            # Dependencias de Python
+├── README.md                   # Este archivo
 │
-├── requirements.txt
-└── README.md
+├── static/
+│   └── js/
+│       └── main.js             # Lógica del frontend (validación, normalización, eventos)
+│
+└── templates/
+    └── index.html              # Interfaz principal de la calculadora
 ```
 
 ---
 
-# 🛠️ **Instalación**
+## ⚙️ Validación y Normalización Técnica
 
-### 1. Crear entorno virtual
+### 🔍 Pipeline de Procesamiento
+
+```
+Usuario ingresa ecuación → Validación de caracteres → Normalización de notación 
+→ Construcción del prompt → Envío a DeepSeek API → Procesamiento de respuesta 
+→ Formateo para MathJax → Renderizado en pantalla
+```
+
+### 📝 Normalización de Notación
+
+**Función `normalizeEquation()`** en `main.js`:
+
+```javascript
+function normalizeEquation(raw) {
+    let eq = raw;
+
+    // Convertir √ a sqrt
+    eq = eq.replace(/√\s*\(/g, 'sqrt(');
+    eq = eq.replace(/√\s*([a-zA-Z0-9_]+)/g, 'sqrt($1)');
+    eq = eq.replace(/√/g, 'sqrt');
+
+    // Convertir notación de derivadas con apóstrofe
+    eq = eq.replace(/y'''/g, 'd^3/dx^3(y)');
+    eq = eq.replace(/y''/g, 'd^2/dx^2(y)');
+    eq = eq.replace(/y'/g, 'd/dx(y)');
+
+    // Normalizar d/dx y -> d/dx(y)
+    eq = eq.replace(/d\/dx\s+([a-zA-Z][a-zA-Z0-9_]*)/g, 'd/dx($1)');
+
+    return eq;
+}
+```
+
+### 🚫 Filtrado de Caracteres Inválidos
+
+**Validación en `keydown` event**:
+
+```javascript
+const allowedCharsRegex = /^[a-zA-Z0-9+\-*/().,=^' √_]$/;
+if (!allowedCharsRegex.test(event.key)) {
+    event.preventDefault();
+}
+```
+
+### 🔄 Construcción del Prompt para DeepSeek
+
+El backend construye un prompt estructurado:
+
+```python
+prompt = f"""
+Resuelve la siguiente ecuación diferencial paso a paso:
+
+Ecuación: {equation}
+Condiciones iniciales: {initial_conditions}
+
+Por favor:
+1. Identifica el tipo de EDO
+2. Resuelve simbólicamente
+3. Aplica las condiciones iniciales si las hay
+4. Muestra cada paso con notación LaTeX
+"""
+```
+
+### 📐 Formateo de Respuestas para MathJax
+
+**Función `formatSolution()`** en `main.js`:
+
+```javascript
+function formatSolution(text) {
+    let cleaned = text;
+
+    // Convertir **Paso X** a encabezados HTML
+    cleaned = cleaned.replace(
+        /\*\*(Paso.*?)\*\*/g,
+        "<h3 class='text-gray-300 font-bold mt-4 mb-2'>$1</h3>"
+    );
+
+    // Preservar bloques LaTeX \[ ... \]
+    cleaned = cleaned.replace(
+        /\\\[([\s\S]*?)\\\]/g,
+        "<div class='my-3 p-2 bg-[#1a1a1a] rounded border border-[#3a3a3a]'>\\[$1\\]</div>"
+    );
+
+    // Preservar inline LaTeX \( ... \)
+    cleaned = cleaned.replace(/\\\((.*?)\\\)/g, '\\($1\\)');
+
+    return cleaned;
+}
+```
+
+---
+
+## 🚀 Instalación
+
+### Requisitos Previos
+
+- Python 3.8 o superior
+- pip (gestor de paquetes de Python)
+- Clave de API de DeepSeek ([obtenerla aquí](https://platform.deepseek.com/))
+
+### Pasos de Instalación
+
+1. **Clonar el repositorio:**
+
+```bash
+git clone https://github.com/Santiago-Rueda-Q/KATSIO.git
+cd KATSIO
+```
+
+2. **Crear un entorno virtual (recomendado):**
 
 ```bash
 python -m venv venv
+source venv/bin/activate  # En Windows: venv\Scripts\activate
 ```
 
-### 2. Activar entorno
-
-Windows:
-
-```bash
-venv\Scripts\activate
-```
-
-Linux/Mac:
-
-```bash
-source venv/bin/activate
-```
-
-### 3. Instalar dependencias
+3. **Instalar dependencias:**
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Ejecutar
+4. **Configurar variables de entorno:**
+
+Crea un archivo `.env` en la raíz del proyecto:
 
 ```bash
-python main.py
+cp .env.example .env
+```
+
+Edita `.env` y añade tu clave de API:
+
+```plaintext
+DEEPSEEK_API_KEY=tu_clave_api_aqui
+```
+
+5. **Ejecutar el servidor:**
+
+```bash
+python app.py
+```
+
+6. **Abrir en el navegador:**
+
+```
+http://localhost:5000
 ```
 
 ---
 
-# 🧩 **Uso de la Aplicación**
+## 💻 Uso
 
-### 1. Escribe la ecuación en el cuadro de texto
+### 1️⃣ Ingresar una Ecuación
 
-Ejemplos:
+Escribe la ecuación en la pantalla LCD verde usando:
+- El **teclado físico** del ordenador
+- Los **botones de la calculadora** en pantalla
+
+**Ejemplo:**
+```
+dy/dx = x*y
+```
+
+### 2️⃣ Añadir Condiciones Iniciales (Opcional)
+
+Haz clic en **"+ Añadir"** para agregar condiciones iniciales:
 
 ```
-y' = x*y
-y'' + 4*y = 0
-(2*x + y) + (x + 2*y)*y' = 0
+y(0) = 1
 ```
 
-### 2. Selecciona un método (o usa modo automático)
+### 3️⃣ Calcular la Solución
 
-### 3. Presiona **Resolver Ecuación**
+Presiona el botón **"CALCULAR"** o pulsa **Enter**.
 
-### 4. Observa:
+### 4️⃣ Ver el Resultado
 
-* Clasificación
-* Solución
-* Pasos detallados
-* Verificación
-
-### 5. (Opcional) Usa:
-
-* Teclado matemático
-* Ver ejemplos
-* Copiar resultado
+La solución aparecerá formateada con:
+- Procedimiento paso a paso
+- Notación matemática profesional (MathJax)
+- Solución general y particular
 
 ---
 
-# 📘 **Tipos de Ecuaciones Soportadas**
+## 🖼️ Capturas de Pantalla
 
-| Tipo             | Ejemplo             |
-| ---------------- | ------------------- |
-| Separables       | y' = x y            |
-| Lineales         | y' + 2y = x         |
-| Exactas          | (2x+y)+(x+2y)y'=0   |
-| Homogéneas       | y' = (x+y)/x        |
-| Bernoulli        | y' + P(x)y = Q(x)yⁿ |
-| Coef. constantes | y'' + 4y = 0        |
-| Indeterminados   | y'' + y = sin(x)    |
+> **Nota:** Añadir capturas de pantalla en esta sección para mostrar:
+> - Interfaz principal de la calculadora
+> - Modal de ejemplos
+> - Modal de ayuda
+> - Ejemplo de solución renderizada
 
 ---
 
-# ❗ **Errores Comunes y Soluciones**
+## 👥 Créditos
 
-### 🔸 “Sintaxis inválida”
+Este proyecto fue desarrollado por:
 
-– Falta multiplicación → usar `2*x`, no `2x`
-– Potencias → `x**2`, no `x^2`
-
-### 🔸 “Variable no reconocida”
-
-Verificar que esté bien escrita:
-
-* `exp(x)`
-* `sin(x)`
-* `sqrt(x)`
-
-### 🔸 “No se pudo resolver”
-
-Ecuaciones extremadamente complejas pueden exceder la capacidad de SymPy.
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/Santiago-Rueda-Q">
+        <img src="https://github.com/Santiago-Rueda-Q.png" width="100px;" alt="Santiago Rueda Quintero"/><br />
+        <sub><b>Santiago Rueda Quintero</b></sub>
+      </a><br />
+      <sub>Backend Developer</sub><br />
+      🐍 Flask • 🤖 DeepSeek Integration • ⚙️ API Design
+    </td>
+    <td align="center">
+      <a href="https://github.com/TIC0o">
+        <img src="https://github.com/TIC0o.png" width="100px;" alt="Eliecer Guevara Fuentes"/><br />
+        <sub><b>Eliecer Guevara Fuentes</b></sub>
+      </a><br />
+      <sub>QA & Testing</sub><br />
+      🧪 Quality Assurance • 🐛 Bug Detection • ✅ Validation
+    </td>
+  </tr>
+</table>
 
 ---
 
-# 🧰 **Créditos y Tecnología**
+## 📄 Licencia
 
-### Tecnologías usadas:
+Este proyecto está bajo la licencia **MIT**. Consulta el archivo [LICENSE](LICENSE) para más detalles.
 
-* **Python 3**
-* **SymPy** (motor matemático)
-* **CustomTkinter** (interfaz gráfica moderna)
-* **Regex** (procesamiento de texto)
-* **Unicode Math Rendering**
+```
+MIT License
 
-Sistema diseñado para uso académico, aprendizaje asistido y apoyo inclusivo para personas con dificultades cognitivas.
+Copyright (c) 2025 Santiago Rueda Quintero & Eliecer Guevara Fuentes
 
+Se concede permiso, de forma gratuita, a cualquier persona que obtenga una copia
+de este software y archivos de documentación asociados (el "Software"), para
+utilizar el Software sin restricciones, incluyendo sin limitación los derechos
+de usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar y/o
+vender copias del Software...
+```
+
+---
+
+## 🤝 Contribuciones
+
+Las contribuciones son bienvenidas. Por favor:
+
+1. Haz un fork del proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+---
+
+## 📧 Contacto
+
+Para preguntas, sugerencias o reportes de bugs:
+
+- **Santiago Rueda Quintero**: [GitHub](https://github.com/Santiago-Rueda-Q)
+- **Eliecer Guevara Fuentes**: [GitHub](https://github.com/TIC0o)
+
+---
+
+<div align="center">
+
+**Hecho con ❤️ por estudiantes apasionados por las matemáticas y la programación**
+
+[![GitHub](https://img.shields.io/badge/GitHub-KATSIO-181717?style=for-the-badge&logo=github)](https://github.com/Santiago-Rueda-Q/KATSIO)
+
+</div>

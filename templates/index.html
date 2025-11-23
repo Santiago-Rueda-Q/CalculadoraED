@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KATSIO - Calculadora de Ecuaciones Diferenciales</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <script>
+    window.MathJax = {
+        tex: { inlineMath: [['\\(', '\\)']] },
+        svg: { fontCache: 'global' }
+    };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" defer></script>
+    
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #1A1A1A;
+        }
+        .lcd-screen {
+            font-family: 'Roboto Mono', monospace;
+            background: #C9D5B5;
+            color: #1a1a1a;
+        }
+        .casio-btn {
+            transition: all 0.1s;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.3);
+        }
+        .casio-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 0 rgba(0,0,0,0.3);
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+        .animate-slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+        .animate-fade-out {
+            animation: fadeOut 0.3s ease-out;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-4">
+    
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer" class="fixed top-4 right-4 space-y-2 z-50"></div>
+
+    <div class="w-full max-w-2xl">
+        
+        <!-- CALCULATOR BODY -->
+        <div class="bg-[#212121] rounded-2xl p-6 shadow-2xl border-2 border-[#2a2a2a]">
+            
+            <!-- BRAND HEADER -->
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-400 tracking-wider">KATSIO</h1>
+                    <p class="text-xs text-gray-600 mt-0.5">DIFFERENTIAL CALCULATOR</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs text-gray-600">fx-991ES PLUS</p>
+                    <p class="text-xs text-gray-700">NATURAL DISPLAY</p>
+                </div>
+            </div>
+
+            <!-- LCD SCREEN -->
+            <div class="mb-4">
+                <div class="lcd-screen rounded-lg p-4 border-4 border-[#8a9678] shadow-inner min-h-[120px]">
+                    <textarea 
+                        id="equationInput" 
+                        placeholder="Ej: dy/dx = y" 
+                        rows="4"
+                        class="w-full bg-transparent outline-none resize-none text-sm leading-relaxed placeholder-gray-600"
+                    ></textarea>
+                </div>
+            </div>
+
+            <!-- INITIAL CONDITIONS -->
+            <div class="bg-[#262626] rounded-lg p-4 mb-4 border border-[#3a3a3a]">
+                <p class="text-xs text-gray-500 mb-2 uppercase tracking-wide">Condiciones Iniciales</p>
+
+                <div id="initialConditionsContainer" class="space-y-2 mb-3">
+                    <!-- ÚNICO INPUT BASE – EL JS GENERA EL RESTO -->
+                    <div class="initial-condition-item flex items-center gap-2">
+                        <input 
+                            type="text" 
+                            class="initial-condition-input flex-1 bg-[#1a1a1a] text-gray-300 text-sm px-3 py-2 rounded border border-[#3a3a3a] outline-none focus:border-[#4a4a4a]" 
+                            placeholder="Ej: y(0)=1"
+                        >
+                    </div>
+                </div>
+
+                <div id="initialConditionButtons" class="flex gap-2">
+                    <button id="addCondition" class="flex-1 bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-400 text-xs py-1.5 rounded transition">
+                        + Añadir
+                    </button>
+                    <button id="removeCondition" class="flex-1 bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-400 text-xs py-1.5 rounded transition disabled:opacity-30 disabled:cursor-not-allowed" disabled>
+                        - Quitar
+                    </button>
+                </div>
+            </div>
+
+            <!-- KEYBOARD -->
+            <div id="calculatorButtons" class="grid grid-cols-6 gap-1.5 mb-4">
+                <!-- ROW 1 -->
+                <button class="calc-btn func casio-btn bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-300 text-xs py-3 rounded font-medium" data-value="sin(">sin</button>
+                <button class="calc-btn func casio-btn bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-300 text-xs py-3 rounded font-medium" data-value="cos(">cos</button>
+                <button class="calc-btn func casio-btn bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-300 text-xs py-3 rounded font-medium" data-value="tan(">tan</button>
+                <button class="calc-btn func casio-btn bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-300 text-xs py-3 rounded font-medium" data-value="log(">log</button>
+                <button class="calc-btn func casio-btn bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-300 text-xs py-3 rounded font-medium" data-value="exp(">exp</button>
+                <button class="calc-btn clear casio-btn bg-[#D37A1F] hover:bg-[#e88a2f] text-white text-xs py-3 rounded font-bold flex items-center justify-center" data-value="C">
+                    AC
+                </button>
+
+                <!-- ROW 2 -->
+                <button class="calc-btn var casio-btn bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-300 text-xs py-3 rounded font-medium" data-value="x">x</button>
+                <button class="calc-btn var casio-btn bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-300 text-xs py-3 rounded font-medium" data-value="y">y</button>
+                <button class="calc-btn var casio-btn bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-300 text-xs py-3 rounded font-medium" data-value="t">t</button>
+                <button class="calc-btn paren casio-btn bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-300 text-xs py-3 rounded font-medium" data-value="(">(</button>
+                <button class="calc-btn paren casio-btn bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-300 text-xs py-3 rounded font-medium" data-value=")">)</button>
+                <button class="calc-btn operator casio-btn bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-300 text-xs py-3 rounded font-medium" data-value="^">^</button>
+
+                <!-- ROW 3 -->
+                <button class="calc-btn casio-btn bg-[#2b2b2b] hover:bg-[#3b3b3b] text-gray-300 text-sm py-3 rounded font-medium" data-value="7">7</button>
+                <button class="calc-btn casio-btn bg-[#2b2b2b] hover:bg-[#3b3b3b] text-gray-300 text-sm py-3 rounded font-medium" data-value="8">8</button>
+                <button class="calc-btn casio-btn bg-[#2b2b2b] hover:bg-[#3b3b3b] text-gray-300 text-sm py-3 rounded font-medium" data-value="9">9</button>
+                <button class="calc-btn diff casio-btn bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-300 text-xs py-3 rounded font-medium" data-value="d/dx(">d/dx</button>
+                <button class="calc-btn diff casio-btn bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-300 text-xs py-3 rounded font-medium" data-value="d/dy(">d/dy</button>
+                <button class="calc-btn integral casio-btn bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-300 text-lg py-3 rounded font-medium" data-value="integrate(">∫</button>
+
+                <!-- ROW 4 -->
+                <button class="calc-btn casio-btn bg-[#2b2b2b] hover:bg-[#3b3b3b] text-gray-300 text-sm py-3 rounded font-medium" data-value="4">4</button>
+                <button class="calc-btn casio-btn bg-[#2b2b2b] hover:bg-[#3b3b3b] text-gray-300 text-sm py-3 rounded font-medium" data-value="5">5</button>
+                <button class="calc-btn casio-btn bg-[#2b2b2b] hover:bg-[#3b3b3b] text-gray-300 text-sm py-3 rounded font-medium" data-value="6">6</button>
+                <button class="calc-btn operator casio-btn bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-300 text-sm py-3 rounded font-medium" data-value="*">×</button>
+                <button class="calc-btn operator casio-btn bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-300 text-sm py-3 rounded font-medium" data-value="/">÷</button>
+                <button class="calc-btn func casio-btn bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-300 text-lg py-3 rounded font-medium" data-value="sqrt(">√</button>
+
+                <!-- ROW 5 -->
+                <button class="calc-btn casio-btn bg-[#2b2b2b] hover:bg-[#3b3b3b] text-gray-300 text-sm py-3 rounded font-medium" data-value="1">1</button>
+                <button class="calc-btn casio-btn bg-[#2b2b2b] hover:bg-[#3b3b3b] text-gray-300 text-sm py-3 rounded font-medium" data-value="2">2</button>
+                <button class="calc-btn casio-btn bg-[#2b2b2b] hover:bg-[#3b3b3b] text-gray-300 text-sm py-3 rounded font-medium" data-value="3">3</button>
+                <button class="calc-btn operator casio-btn bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-300 text-sm py-3 rounded font-medium" data-value="-">−</button>
+                <button class="calc-btn operator casio-btn bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-300 text-sm py-3 rounded font-medium" data-value="+">+</button>
+                <button class="calc-btn const casio-btn bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-300 text-xs py-3 rounded font-medium italic" data-value="e">e</button>
+
+                <!-- ROW 6 -->
+                <button class="calc-btn casio-btn bg-[#2b2b2b] hover:bg-[#3b3b3b] text-gray-300 text-sm py-3 rounded font-medium" data-value="0">0</button>
+                <button class="calc-btn casio-btn bg-[#2b2b2b] hover:bg-[#3b3b3b] text-gray-300 text-sm py-3 rounded font-medium" data-value=".">.</button>
+                <button id="examplesBtn"
+                        class="calc-btn empty casio-btn bg-[#1f2937] hover:bg-[#374151] text-blue-100 text-xs py-3 rounded font-semibold tracking-wide">
+                    Ejemplos
+                </button>
+
+                <button id="helpBtn"
+                        class="calc-btn empty casio-btn bg-[#3b143b] hover:bg-[#4b1f4b] text-purple-100 text-xs py-3 rounded font-semibold tracking-wide">
+                    Ayuda
+                </button>
+                <button class="calc-btn casio-btn bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-300 text-sm py-3 rounded font-medium" data-value="=">=</button>
+                <button class="calc-btn const casio-btn bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-300 text-sm py-3 rounded font-medium" data-value="pi">π</button>
+            </div>
+
+            <!-- CALCULATE BUTTON -->
+            <div id="buttons-calculation-app" class="space-y-2">
+                <button id="solveButton" class="w-full bg-[#1C4E80] hover:bg-[#2a5e90] active:scale-95 text-white font-bold py-4 rounded-lg shadow-lg transition uppercase tracking-wider text-sm">
+                    CALCULAR
+                </button>
+                <div id="loading" class="hidden"></div>
+                <div id="error" class="hidden"></div>
+            </div>
+
+        </div>
+
+        <!-- RESULTS SECTION -->
+        <div id="solution-calculator-container-output" class="mt-4">
+            <div id="result" class="bg-[#262626] rounded-xl p-5 border-2 border-[#3a3a3a] shadow-xl">
+                <h2 class="text-gray-400 text-sm uppercase tracking-wide mb-3 border-b border-[#3a3a3a] pb-2">Solución</h2>
+                <div id="solutionOutput" class="text-gray-300 text-sm leading-relaxed font-mono">
+                    <div class="text-center py-8 text-gray-600">
+                        <p class="text-sm">Ingresa una ecuación diferencial y presiona Calcular</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COPYRIGHT -->
+        <div class="text-center mt-6">
+            <button id="copyrightBtn" class="text-gray-600 hover:text-gray-400 text-xs transition">
+                © 2025 Katsio – Derechos de autor
+            </button>
+        </div>
+
+    </div>
+
+    <!-- MODAL -->
+    <div id="creditsModal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+        <div class="bg-[#1f1f1f] rounded-lg border-2 border-[#3a3a3a] max-w-md w-full p-6">
+            <h3 class="text-gray-300 font-bold text-lg mb-4 border-b border-[#3a3a3a] pb-2">Créditos del Proyecto</h3>
+            
+            <div class="space-y-4 mb-6">
+                <div>
+                    <p class="text-gray-400 font-medium">Santiago Rueda Quintero</p>
+                    <p class="text-gray-600 text-sm">Backend Developer</p>
+                    <a href="https://github.com/Santiago-Rueda-Q" target="_blank" class="text-blue-400 hover:text-blue-300 text-sm">
+                        github.com/Santiago-Rueda-Q
+                    </a>
+                </div>
+                
+                <div>
+                    <p class="text-gray-400 font-medium">Eliecer Guevara Fuentes</p>
+                    <p class="text-gray-600 text-sm">QA & Testing</p>
+                    <a href="https://github.com/TIC0o" target="_blank" class="text-blue-400 hover:text-blue-300 text-sm">
+                        https://github.com/TIC0o
+                    </a>
+                </div>
+            </div>
+            
+            <button id="closeModal" class="w-full bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-300 py-2 rounded transition text-sm">
+                Cerrar
+            </button>
+        </div>
+    </div>
+
+        <!-- MODAL EJEMPLOS -->
+    <div id="examplesModal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+    <div class="bg-[#1f1f1f] rounded-lg border-2 border-[#3a3a3a] max-w-lg w-full p-6">
+        <h3 class="text-gray-300 font-bold text-lg mb-4 border-b border-[#3a3a3a] pb-2">
+        Ejemplos de ecuaciones diferenciales
+        </h3>
+
+        <p class="text-gray-500 text-xs mb-3">
+        Haz clic sobre un ejemplo para enviarlo a la pantalla de la calculadora.
+        </p>
+
+        <div id="examplesList" class="space-y-2 text-sm">
+        <!-- Cada botón tiene la ecuación en data-equation -->
+        <button class="w-full text-left px-3 py-2 rounded bg-[#262626] hover:bg-[#323232] text-gray-200"
+                data-equation="dy/dx = x*y">
+            1. dy/dx = x*y
+        </button>
+
+        <button class="w-full text-left px-3 py-2 rounded bg-[#262626] hover:bg-[#323232] text-gray-200"
+                data-equation="dy/dx = x^2 / y">
+            2. dy/dx = x^2 / y
+        </button>
+
+        <button class="w-full text-left px-3 py-2 rounded bg-[#262626] hover:bg-[#323232] text-gray-200"
+                data-equation="dy/dx + y = exp(x)">
+            3. dy/dx + y = exp(x)
+        </button>
+
+        <button class="w-full text-left px-3 py-2 rounded bg-[#262626] hover:bg-[#323232] text-gray-200"
+                data-equation="dy/dx = x*exp(-y)">
+            4. dy/dx = x*exp(-y)
+        </button>
+
+        <button class="w-full text-left px-3 py-2 rounded bg-[#262626] hover:bg-[#323232] text-gray-200"
+                data-equation="dy/dx = y / (x + 1)">
+            5. dy/dx = y / (x + 1)
+        </button>
+
+        <button class="w-full text-left px-3 py-2 rounded bg-[#262626] hover:bg-[#323232] text-gray-200"
+                data-equation="dy/dx + 2*y = sin(x)">
+            6. dy/dx + 2*y = sin(x)
+        </button>
+
+        <button class="w-full text-left px-3 py-2 rounded bg-[#262626] hover:bg-[#323232] text-gray-200"
+                data-equation="dy/dx = (x^3 + 2)/(y + 1)">
+            7. dy/dx = (x^3 + 2)/(y + 1)
+        </button>
+
+        <button class="w-full text-left px-3 py-2 rounded bg-[#262626] hover:bg-[#323232] text-gray-200"
+                data-equation="dy/dx = sqrt(x^2 + y^2)">
+            8. dy/dx = sqrt(x^2 + y^2)
+        </button>
+
+        </div>
+
+        <button id="closeExamples"
+                class="mt-5 w-full bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-300 py-2 rounded transition text-sm">
+        Cerrar
+        </button>
+    </div>
+    </div>
+
+    <!-- MODAL AYUDA -->
+    <div id="helpModal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+    <div class="bg-[#1f1f1f] rounded-xl border-2 border-[#3a3a3a] max-w-lg w-full p-6 shadow-2xl">
+
+        <h3 class="text-gray-200 font-bold text-xl mb-4 border-b border-[#3a3a3a] pb-2 tracking-wide">
+        Guía rápida de KATSIO
+        </h3>
+
+        <div class="space-y-5 text-sm text-gray-300 leading-relaxed">
+
+        <!-- ¿Qué es? -->
+        <div>
+            <p class="font-semibold text-gray-100 text-base mb-1">📘 ¿Qué es KATSIO?</p>
+            <p class="text-gray-400 text-xs">
+            KATSIO es una calculadora de ecuaciones diferenciales inspirada en el estilo de las calculadoras Casio.
+            Te permite escribir una EDO, añadir condiciones iniciales y obtener la solución simbólica de manera clara
+            y entendible.
+            </p>
+        </div>
+
+        <!-- Entrada -->
+        <div>
+            <p class="font-semibold text-gray-100 text-base mb-1">⌨️ ¿Cómo escribir tu ecuación?</p>
+            <p class="text-gray-400 text-xs mb-2">
+            Puedes escribir las ecuaciones como normalmente las ves en clase. KATSIO entiende diferentes formatos:
+            </p>
+
+            <ul class="list-disc list-inside text-gray-400 text-xs space-y-1">
+            <li><span class="font-semibold text-gray-200">Variables:</span> x, y, t</li>
+            <li><span class="font-semibold text-gray-200">Operadores:</span> +, -, *, /, ^</li>
+            <li><span class="font-semibold text-gray-200">Funciones:</span> sin(), cos(), tan(), log(), exp(), sqrt()</li>
+            <li><span class="font-semibold text-gray-200">Derivadas:</span> puedes usar  
+                <code class="text-blue-300">dy/dx</code>,  
+                <code class="text-blue-300">y'</code>  
+                o el botón  
+                <code class="text-blue-300">d/dx( )</code>
+            </li>
+            <li><span class="font-semibold text-gray-200">Condiciones iniciales:</span>  
+                escríbelas como <code class="text-blue-300">y(0)=1</code> o <code class="text-blue-300">y(1)=2</code>.
+            </li>
+            </ul>
+        </div>
+
+        <!-- Cómo calcular -->
+        <div>
+            <p class="font-semibold text-gray-100 text-base mb-1">⚡ ¿Cómo calcular?</p>
+            <ol class="list-decimal list-inside text-gray-400 text-xs space-y-1">
+            <li>Escribe tu ecuación diferencial en la pantalla verde.</li>
+            <li>Añade condiciones iniciales si las necesitas.</li>
+            <li>Presiona el botón <span class="font-bold text-white">CALCULAR</span>.</li>
+            <li>Espera mientras la ecuación se resuelve (verás un pequeño cargador).</li>
+            <li>Revisa la sección de <span class="text-gray-100 font-semibold">Solución</span> para ver el resultado final.</li>
+            </ol>
+        </div>
+
+        <!-- Salida -->
+        <div>
+            <p class="font-semibold text-gray-100 text-base mb-1">📚 ¿Qué muestra la calculadora?</p>
+            <p class="text-gray-400 text-xs">
+            KATSIO puede mostrar soluciones generales, particulares y algunos pasos del proceso.
+            Las expresiones matemáticas aparecen en formato claro usando MathJax, muy parecido a cómo se ve en un libro.
+            </p>
+        </div>
+
+        <!-- Tip extra -->
+        <div class="bg-[#262626] p-3 rounded-lg border border-[#3a3a3a] text-xs text-gray-400">
+            💡 <span class="text-gray-200 font-semibold">Tip:</span>  
+            Si no sabes cómo empezar, usa el botón <span class="text-blue-300 font-semibold">Ejemplos</span> para ver
+            ecuaciones listas para copiar.
+        </div>
+        </div>
+
+        <button id="closeHelp"
+                class="mt-6 w-full bg-[#3a3a3a] hover:bg-[#4a4a4a] text-gray-200 py-2 rounded-lg transition text-sm font-semibold">
+        Cerrar
+        </button>
+
+    </div>
+    </div>
+
+
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
