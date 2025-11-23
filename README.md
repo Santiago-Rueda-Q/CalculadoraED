@@ -16,6 +16,25 @@
 </div>
 
 ---
+<div align="center">
+  <h1>Miembros</h1>
+  <table>
+    <tr>
+      <td align="center">
+        <a href="https://github.com/Santiago-Rueda-Q">
+          <img src="https://github.com/Santiago-Rueda-Q.png" width="100px;" alt="Santiago Rueda Quintero"/><br />
+          <sub><b>Santiago Rueda Quintero</b></sub>
+        </a><br />
+      </td>
+      <td align="center">
+        <a href="https://github.com/TIC0o">
+          <img src="https://github.com/TIC0o.png" width="100px;" alt="Eliecer Guevara Fuentes"/><br />
+          <sub><b>Eliecer Guevara Fuentes</b></sub>
+        </a><br />
+      </td>
+    </tr>
+  </table>
+</div>
 
 ## 📖 Descripción General
 
@@ -65,10 +84,6 @@ A pesar de su funcionalidad básica, el prototipo enfrentó varios desafíos té
 3. **Condiciones iniciales poco robustas**:
    - Fallos al procesar CI en ecuaciones implícitas
    - Validación insuficiente de formato
-
-### 🚀 Inspiración para la Migración Web
-
-Durante una clase, se presentó un proyecto similar que demostraba las ventajas de una arquitectura web moderna. Esto motivó la reconstrucción completa de KATSIO con tecnologías actuales, resultando en una experiencia de usuario significativamente superior.
 
 ---
 
@@ -437,6 +452,7 @@ La solución aparecerá formateada con:
 ## 👥 Créditos
 
 Este proyecto fue desarrollado por:
+<div align="center">
 
 <table>
   <tr>
@@ -458,6 +474,7 @@ Este proyecto fue desarrollado por:
     </td>
   </tr>
 </table>
+</div align="center">
 
 ---
 
