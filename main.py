@@ -629,7 +629,6 @@ Ejemplo: y'' + 4*y = exp(x)  |  (2*x + y)*y' = x - y  |  y' = x*y"""
             ]),
             ("Ecuaciones Exactas", [
                 ("(2*x + y) + (x + 2*y)*y' = 0", "Exacta básica"),
-                ("(2*x*y + 1) + (x**2 + 2*y)*y' = 0", "Exacta con términos cuadráticos"),
             ]),
             ("Ecuaciones Homogéneas", [
                 ("y' = (x + y)/x", "Homogénea simple"),
